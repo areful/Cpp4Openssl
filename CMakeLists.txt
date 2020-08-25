@@ -7,6 +7,7 @@ project(CppRSAWithOpenssl)
 
 set(CMAKE_CXX_STANDARD 14)
 
+#pkgconfig, openssl
 find_package(PkgConfig REQUIRED)
 pkg_search_module(OPENSSL REQUIRED openssl)
 
@@ -17,16 +18,15 @@ else ()
     # Error; with REQUIRED, pkg_search_module() will throw an error by it's own
 endif ()
 
+# sub module files
+aux_source_directory(aes AES_FILES)
+aux_source_directory(rsa RSA_FILES)
+aux_source_directory(b64 BASE64_FILES)
+
+# application
 add_executable(Cpp4Openssl
         main.cpp
-        b64/b64.cpp
-        b64/b64.h
-        b64/test_b64.cpp
-        b64/test_b64.h
-        rsa/rsa.cpp
-        rsa/rsa.h
-        rsa/test_rsa.cpp
-        rsa/test_rsa.h
-        aes/test_aes.cpp
-        aes/test_aes.h)
+        ${AES_FILES}
+        ${RSA_FILES}
+        ${BASE64_FILES})
 target_link_libraries(Cpp4Openssl ${OPENSSL_LIBRARIES})
