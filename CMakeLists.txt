@@ -30,3 +30,9 @@ add_executable(Cpp4Openssl
         ${RSA_FILES}
         ${BASE64_FILES})
 target_link_libraries(Cpp4Openssl ${OPENSSL_LIBRARIES})
+
+aux_source_directory(aes2 AES2_SOURCE)
+add_executable(test_aes2
+        ${AES2_SOURCE}
+        ${BASE64_FILES})
+target_link_libraries(test_aes2 ${OPENSSL_LIBRARIES})
