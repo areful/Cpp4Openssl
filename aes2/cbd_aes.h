@@ -5,6 +5,8 @@
 #ifndef CPPRSAWITHOPENSSL_CBD_AES_H
 #define CPPRSAWITHOPENSSL_CBD_AES_H
 
+#define KEY_SIZE 128
+
 #include <string>
 
 static char KEY_HTTP[17] = "EF290D911DD34E8E";

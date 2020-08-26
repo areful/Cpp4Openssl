@@ -72,7 +72,7 @@ int main() {
     test_encrypt();
     test_decrypt();
 
-    string content = "Hello, AES cipher!";
+    string content = "Hello, AES cipher!第一部分";
     string encrypted = encrypt(content, 1);
     cout << encrypted << endl;
 

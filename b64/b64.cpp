@@ -10,7 +10,7 @@
 #include "b64.h"
 
 // base64 编码
-char *base64Encode(const char *buffer, int length, bool newLine) {
+char *base64Encode(const char *buffer, unsigned int length, bool newLine) {
     BIO *bmem = NULL;
     BIO *b64 = NULL;
     BUF_MEM *bptr;
@@ -35,7 +35,7 @@ char *base64Encode(const char *buffer, int length, bool newLine) {
 }
 
 // base64 解码
-char *base64Decode(char *input, int length, bool newLine) {
+char *base64Decode(char *input, unsigned int length, bool newLine) {
     BIO *b64 = NULL;
     BIO *bmem = NULL;
     char *buffer = (char *) malloc(length);

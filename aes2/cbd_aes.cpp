@@ -32,28 +32,23 @@ string encrypt(string &content, int type) {
 }
 
 static string private_encrypt(string &content, char *key, char *iv) {
-    char *out;
     AES_KEY aes;
-    int len = content.length();
-    int block_size = len / AES_BLOCK_SIZE + 1;
-    int total = block_size * AES_BLOCK_SIZE;
-    char *enc_s = (char *) calloc(total + 1, 1);
-    int nNumber;
-    if (len % 16 > 0)
-        nNumber = total - len;
-    else
-        nNumber = 16;
-    memset(enc_s, nNumber, total);
-    strncpy(enc_s, content.data(), len);
-    if (AES_set_encrypt_key((unsigned char *) key, 128, &aes) < 0) {
+    if (AES_set_encrypt_key((unsigned char *) key, KEY_SIZE, &aes) < 0) {
         return std::string();
     }
 
-    out = (char *) malloc(total);
-    AES_cbc_encrypt((unsigned char *) enc_s, (unsigned char *) out, block_size * 16,
+    int in_len = content.length();
+    unsigned int rest_len = in_len % AES_BLOCK_SIZE;
+    unsigned int padding_len = AES_BLOCK_SIZE - rest_len;
+    unsigned int out_len = in_len + padding_len;
+    char *input = (char *) calloc(1, out_len);
+    memcpy(input, content.c_str(), in_len);
+
+    char *out = (char *) malloc(out_len);
+    AES_cbc_encrypt((unsigned char *) input, (unsigned char *) out, out_len,
                     &aes,
                     (unsigned char *) iv, AES_ENCRYPT);
-    char *res = base64Encode(out, block_size * 16, false);
+    char *res = base64Encode(out, out_len, false);
     return std::string(res);
 }
 
@@ -79,32 +74,28 @@ static string private_decrypt(string &content, char *key, char *iv) {
         return std::string();
     }
 
-    char *b64_encrypted_data = const_cast<char *>(content.data());
+    char *b64_encrypted_data = const_cast<char *>(content.c_str());
     int in_len = content.length();
     char *in = base64Decode(b64_encrypted_data, in_len, false);
 
     AES_KEY aes;
-    if (AES_set_decrypt_key((unsigned char *) key, 128, &aes) < 0) {
+    if (AES_set_decrypt_key((unsigned char *) key, KEY_SIZE, &aes) < 0) {
         return std::string();
     }
 
-    int len = content.length();
-    int block_size = len / AES_BLOCK_SIZE + 1;
+    int block_size = in_len / AES_BLOCK_SIZE + 1;
     int total = block_size * AES_BLOCK_SIZE;
-
     char *out = (char *) malloc(total);
     AES_cbc_encrypt((unsigned char *) in, (unsigned char *) out, total,
                     &aes,
                     (unsigned char *) iv, AES_DECRYPT);
-    int out_len = total;
-    int k = out_len;
-    for (int i = 0; i < out_len; i++) {
-        if ((int) (out[i]) <= 16) {
-            k = i;
-            break;
-        }
+
+    unsigned int out_len = in_len;
+    unsigned int padding_len = (unsigned char) *(out + out_len - 1);
+    if (padding_len > 0 && padding_len <= AES_BLOCK_SIZE) {
+        out_len -= padding_len;
     }
-    char *result = (char *) calloc(k + 1, 1);
-    strncpy(result, out, k);
+    char *result = (char *) calloc(out_len + 1, 1);
+    strncpy(result, out, out_len);
     return std::string(result);
 }
