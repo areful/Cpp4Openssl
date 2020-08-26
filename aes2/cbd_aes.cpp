@@ -9,11 +9,15 @@
 
 using namespace std;
 
-static unsigned char *private_encrypt(unsigned char *input, int in_len, int type);
+static unsigned char *private_encrypt(unsigned char *in, int in_len, int type);
 
 static char *private_decrypt(unsigned char *in, unsigned int in_len, unsigned int out_len, int type);
 
 string encrypt(string &content, int type) {
+    if (content.empty()) {
+        return string();
+    }
+
     int in_len = content.length();
     auto *out = private_encrypt((unsigned char *) content.c_str(), in_len, type);
     if (out == nullptr) {
@@ -25,11 +29,10 @@ string encrypt(string &content, int type) {
     return std::string(res);
 }
 
-static unsigned char *private_encrypt(unsigned char *input, int in_len, int type) {
+static unsigned char *private_encrypt(unsigned char *in, int in_len, int type) {
     AES_KEY aes;
-    unsigned char key[AES_BLOCK_SIZE + 1] = {0};
+    unsigned char key[AES_BLOCK_SIZE] = {0};
     unsigned char iv[AES_BLOCK_SIZE] = {0};
-
     get_key_iv(key, iv, AES_BLOCK_SIZE, type);
     if (AES_set_encrypt_key(key, KEY_SIZE, &aes) < 0) {
         return nullptr;
@@ -37,7 +40,7 @@ static unsigned char *private_encrypt(unsigned char *input, int in_len, int type
 
     unsigned int out_len = in_len + (AES_BLOCK_SIZE - in_len % AES_BLOCK_SIZE);
     auto *out = (unsigned char *) malloc(out_len);
-    AES_cbc_encrypt(input, out, out_len, &aes, iv, AES_ENCRYPT);
+    AES_cbc_encrypt(in, out, out_len, &aes, iv, AES_ENCRYPT);
     return out;
 }
 
@@ -60,11 +63,9 @@ string decrypt(string &content, int type) {
 
 static char *private_decrypt(unsigned char *in, unsigned int in_len, unsigned int out_len, int type) {
     AES_KEY aes;
-    int size = AES_BLOCK_SIZE;
-    unsigned char key[AES_BLOCK_SIZE + 1] = {0};
+    unsigned char key[AES_BLOCK_SIZE] = {0};
     unsigned char iv[AES_BLOCK_SIZE] = {0};
-
-    get_key_iv(key, iv, size, type);
+    get_key_iv(key, iv, AES_BLOCK_SIZE, type);
     if (AES_set_decrypt_key(key, KEY_SIZE, &aes) < 0) {
         return nullptr;
     }
