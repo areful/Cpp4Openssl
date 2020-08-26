@@ -22,6 +22,7 @@ endif ()
 aux_source_directory(aes AES_FILES)
 aux_source_directory(rsa RSA_FILES)
 aux_source_directory(b64 BASE64_FILES)
+aux_source_directory(b64v2 BASE64_FILES_V2)
 
 # application
 add_executable(Cpp4Openssl
@@ -34,5 +35,8 @@ target_link_libraries(Cpp4Openssl ${OPENSSL_LIBRARIES})
 aux_source_directory(aes2 AES2_SOURCE)
 add_executable(test_aes2
         ${AES2_SOURCE}
-        ${BASE64_FILES})
+        ${BASE64_FILES_V2}
+        )
 target_link_libraries(test_aes2 ${OPENSSL_LIBRARIES})
+
+add_subdirectory(aes3)
