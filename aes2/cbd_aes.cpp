@@ -83,7 +83,7 @@ static string private_decrypt(string &content, char *key, char *iv) {
         return std::string();
     }
 
-    int block_size = in_len / AES_BLOCK_SIZE + 1;
+    int block_size = (in_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE;
     int total = block_size * AES_BLOCK_SIZE;
     char *out = (char *) malloc(total);
     AES_cbc_encrypt((unsigned char *) in, (unsigned char *) out, total,
