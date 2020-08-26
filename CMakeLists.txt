@@ -40,3 +40,5 @@ add_executable(test_aes2
 target_link_libraries(test_aes2 ${OPENSSL_LIBRARIES})
 
 add_subdirectory(aes3)
+
+add_subdirectory(aes4)

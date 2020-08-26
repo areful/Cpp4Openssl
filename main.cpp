@@ -7,9 +7,9 @@
 #include "aes/test_aes.h"
 
 int main(int argc, char *argv[]) {
-    test_base64();
+//    test_base64();
     test_rsa();
-    test_aes();
+//    test_aes();
 
     return 0;
 }
