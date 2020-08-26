@@ -53,7 +53,7 @@ int Crypto::init() {
   EVP_CIPHER_CTX_init(aesEncryptContext);
   EVP_CIPHER_CTX_init(aesDecryptContext);
 
-  EVP_CipherInit_ex(aesEncryptContext, EVP_aes_256_cbc(), NULL, NULL, NULL, 1);
+  EVP_CipherInit_ex(aesEncryptContext, EVP_aes_128_cbc(), NULL, NULL, NULL, 1);
 
   /* Now we can set key and IV lengths */
   aesKeyLength = EVP_CIPHER_CTX_key_length(aesEncryptContext);
@@ -94,41 +94,32 @@ int Crypto::generateAesKey(unsigned char **aesKey, unsigned char **aesIv) {
     return FAILURE;
   }
 
-unsigned char KEY_HTTP[AES_BLOCK_SIZE + 1] = "EF290D911DD34E8E";
-unsigned char IV_HTTP[AES_BLOCK_SIZE] = {
-    0x13, 0x33, 0x5D, 0x7F, 0x52, 0x29, 0x2C, 0x15,
-    0x3B, 0x51, 0x55, 0x23, 0x4F, 0x19, 0x36, 0x3D
-};
+  // For the AES key we have the option of using a PBKDF or just using straight random
+  // data for the key and IV. Depending on your use case, you will want to pick one or another.
+  #ifdef USE_PBKDF
+    unsigned char *aesPass = (unsigned char*)malloc(aesKeyLength);
+    unsigned char *aesSalt = (unsigned char*)malloc(8);
 
-    memcpy(*aesKey, KEY_HTTP, 16);
-    memcpy(*aesIv, IV_HTTP, 16);
+    if(aesPass == NULL || aesSalt == NULL) {
+      return FAILURE;
+    }
 
-//  // For the AES key we have the option of using a PBKDF or just using straight random
-//  // data for the key and IV. Depending on your use case, you will want to pick one or another.
-//  #ifdef USE_PBKDF
-//    unsigned char *aesPass = (unsigned char*)malloc(aesKeyLength);
-//    unsigned char *aesSalt = (unsigned char*)malloc(8);
-//
-//    if(aesPass == NULL || aesSalt == NULL) {
-//      return FAILURE;
-//    }
-//
-//    // Get some random data to use as the AES pass and salt
-//    if(RAND_bytes(aesPass, aesKeyLength) == 0) {
-//      return FAILURE;
-//    }
-//
-//    if(RAND_bytes(aesSalt, 8) == 0) {
-//      return FAILURE;
-//    }
-//
-//    if(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), aesSalt, aesPass, aesKeyLength, AES_ROUNDS, aesKey, aesIv) == 0) {
-//      return FAILURE;
-//    }
-//
-//    free(aesPass);
-//    free(aesSalt);
-//  #else
+    // Get some random data to use as the AES pass and salt
+    if(RAND_bytes(aesPass, aesKeyLength) == 0) {
+      return FAILURE;
+    }
+
+    if(RAND_bytes(aesSalt, 8) == 0) {
+      return FAILURE;
+    }
+
+    if(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), aesSalt, aesPass, aesKeyLength, AES_ROUNDS, aesKey, aesIv) == 0) {
+      return FAILURE;
+    }
+
+    free(aesPass);
+    free(aesSalt);
+  #else
 //    if(RAND_bytes(*aesKey, aesKeyLength) == 0) {
 //      return FAILURE;
 //    }
@@ -136,7 +127,17 @@ unsigned char IV_HTTP[AES_BLOCK_SIZE] = {
 //    if(RAND_bytes(*aesIv, aesIvLength) == 0) {
 //      return FAILURE;
 //    }
-//  #endif
+
+    unsigned char KEY_HTTP[AES_BLOCK_SIZE + 1] = "EF290D911DD34E8E";
+    unsigned char IV_HTTP[AES_BLOCK_SIZE] = {
+            0x13, 0x33, 0x5D, 0x7F, 0x52, 0x29, 0x2C, 0x15,
+            0x3B, 0x51, 0x55, 0x23, 0x4F, 0x19, 0x36, 0x3D
+    };
+
+    memcpy(*aesKey, KEY_HTTP, AES_BLOCK_SIZE);
+    memcpy(*aesIv, IV_HTTP, AES_BLOCK_SIZE);
+
+#endif
 
   return SUCCESS;
 }
@@ -162,7 +163,7 @@ int Crypto::rsaEncrypt(const unsigned char *message, size_t messageLength, unsig
   }
 
   // Encrypt it!
-  if(!EVP_SealInit(rsaEncryptContext, EVP_aes_256_cbc(), encryptedKey, (int*)encryptedKeyLength, *iv, &remotePublicKey, 1)) {
+  if(!EVP_SealInit(rsaEncryptContext, EVP_aes_128_cbc(), encryptedKey, (int*)encryptedKeyLength, *iv, &remotePublicKey, 1)) {
     return FAILURE;
   }
 
@@ -198,7 +199,7 @@ int Crypto::rsaDecrypt(unsigned char *encryptedMessage, size_t encryptedMessageL
   #endif
 
   // Decrypt it!
-  if(!EVP_OpenInit(rsaDecryptContext, EVP_aes_256_cbc(), encryptedKey, encryptedKeyLength, iv, key)) {
+  if(!EVP_OpenInit(rsaDecryptContext, EVP_aes_128_cbc(), encryptedKey, encryptedKeyLength, iv, key)) {
     return FAILURE;
   }
 
@@ -226,7 +227,7 @@ int Crypto::aesEncrypt(const unsigned char *message, size_t messageLength, unsig
   }
 
   // Encrypt it!
-  if(!EVP_EncryptInit_ex(aesEncryptContext, EVP_aes_256_cbc(), NULL, aesKey, aesIv)) {
+  if(!EVP_EncryptInit_ex(aesEncryptContext, EVP_aes_128_cbc(), NULL, aesKey, aesIv)) {
     return FAILURE;
   }
 
@@ -253,7 +254,7 @@ int Crypto::aesDecrypt(unsigned char *encryptedMessage, size_t encryptedMessageL
   }
 
   // Decrypt it!
-  if(!EVP_DecryptInit_ex(aesDecryptContext, EVP_aes_256_cbc(), NULL, aesKey, aesIv)) {
+  if(!EVP_DecryptInit_ex(aesDecryptContext, EVP_aes_128_cbc(), NULL, aesKey, aesIv)) {
     return FAILURE;
   }
 
