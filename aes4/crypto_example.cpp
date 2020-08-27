@@ -1,4 +1,5 @@
 #include "crypto_example.h"
+#include "../aes5/cbd_aes5.h"
 
 using std::string;
 using std::cin;
@@ -17,7 +18,7 @@ int main() {
     };
     crypto.setAesKey(KEY_HTTP, 16);
     crypto.setAesIv(IV_HTTP, 16);
-    unsigned char *publicKey = (unsigned char *) "";
+    unsigned char *publicKey = (unsigned char *) "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtbplTenxG+rOhCgzVwdTLKt2BEooYk347sjzV8QuTbhBMk73CYFpoEyFd1vZMJtpiLgdo7uU7GZ3CTzvbApYdgspWaQ9Nle+zXEB9Gd0TTrkfri1HDJ71QxK9nVOe7BEAMN2nyK81CJBMlYyforSwzRE4PMVifIJLj71Q9EGGlQIDAQAB";
     crypto.setRemotePublicKey(publicKey, 1024);
 
     while (!std::cin.eof()) {
