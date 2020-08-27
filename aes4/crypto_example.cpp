@@ -10,6 +10,16 @@ int main() {
     printKeys(&crypto);
   #endif
 
+    unsigned char KEY_HTTP[AES_BLOCK_SIZE + 1] = "EF290D911DD34E8E";
+    unsigned char IV_HTTP[AES_BLOCK_SIZE] = {
+            0x13, 0x33, 0x5D, 0x7F, 0x52, 0x29, 0x2C, 0x15,
+            0x3B, 0x51, 0x55, 0x23, 0x4F, 0x19, 0x36, 0x3D
+    };
+    crypto.setAesKey(KEY_HTTP, 16);
+    crypto.setAesIv(IV_HTTP, 16);
+    unsigned char * publicKey = (unsigned char *) "";
+    crypto.setRemotePublicKey(publicKey, 1024);
+
   while(!std::cin.eof()) {
     encryptRsa(&crypto);
     encryptAes(&crypto);

@@ -120,22 +120,12 @@ int Crypto::generateAesKey(unsigned char **aesKey, unsigned char **aesIv) {
     free(aesPass);
     free(aesSalt);
   #else
-//    if(RAND_bytes(*aesKey, aesKeyLength) == 0) {
-//      return FAILURE;
-//    }
-//
-//    if(RAND_bytes(*aesIv, aesIvLength) == 0) {
-//      return FAILURE;
-//    }
-
-    unsigned char KEY_HTTP[AES_BLOCK_SIZE + 1] = "EF290D911DD34E8E";
-    unsigned char IV_HTTP[AES_BLOCK_SIZE] = {
-            0x13, 0x33, 0x5D, 0x7F, 0x52, 0x29, 0x2C, 0x15,
-            0x3B, 0x51, 0x55, 0x23, 0x4F, 0x19, 0x36, 0x3D
-    };
-
-    memcpy(*aesKey, KEY_HTTP, AES_BLOCK_SIZE);
-    memcpy(*aesIv, IV_HTTP, AES_BLOCK_SIZE);
+  if(RAND_bytes(*aesKey, aesKeyLength) == 0) {
+    return FAILURE;
+  }
+  if(RAND_bytes(*aesIv, aesIvLength) == 0) {
+    return FAILURE;
+  }
 
 #endif
 
