@@ -27,34 +27,44 @@
 #define KEY_AES_IV     4
 
 class Crypto {
-  public:
+public:
     Crypto();
+
     Crypto(unsigned char *remotePubKey, size_t remotePubKeyLen);
+
     ~Crypto();
 
-    int rsaEncrypt(const unsigned char *message, size_t messageLength, unsigned char **encryptedMessage, unsigned char **encryptedKey,
-      size_t *encryptedKeyLength, unsigned char **iv, size_t *ivLength);
-    int rsaDecrypt(unsigned char *encryptedMessage, size_t encryptedMessageLength, unsigned char *encryptedKey, size_t encryptedKeyLength,
-      unsigned char *iv, size_t ivLength, unsigned char **decryptedMessage);
+    int rsaEncrypt(const unsigned char *message, size_t messageLength, unsigned char **encryptedMessage,
+                   unsigned char **encryptedKey,
+                   size_t *encryptedKeyLength, unsigned char **iv, size_t *ivLength);
+
+    int rsaDecrypt(unsigned char *encryptedMessage, size_t encryptedMessageLength, unsigned char *encryptedKey,
+                   size_t encryptedKeyLength,
+                   unsigned char *iv, size_t ivLength, unsigned char **decryptedMessage);
 
     int aesEncrypt(const unsigned char *message, size_t messageLength, unsigned char **encryptedMessage);
+
     int aesDecrypt(unsigned char *encryptedMessage, size_t encryptedMessageLength, unsigned char **decryptedMessage);
 
     int getRemotePublicKey(unsigned char **publicKey);
+
     int setRemotePublicKey(unsigned char *publicKey, size_t publicKeyLength);
 
     int getLocalPublicKey(unsigned char **publicKey);
+
     int getLocalPrivateKey(unsigned char **privateKey);
 
     int getAesKey(unsigned char **aesKey);
+
     int setAesKey(unsigned char *aesKey, size_t aesKeyLen);
 
     int getAesIv(unsigned char **aesIv);
+
     int setAesIv(unsigned char *aesIv, size_t aesIvLen);
 
     int writeKeyToFile(FILE *file, int key);
 
-  private:
+private:
     static EVP_PKEY *localKeypair;
     EVP_PKEY *remotePublicKey;
 
@@ -71,8 +81,11 @@ class Crypto {
     size_t aesIvLength;
 
     int init();
+
     int generateRsaKeypair(EVP_PKEY **keypair);
+
     int generateAesKey(unsigned char **aesKey, unsigned char **aesIv);
+
     int bioToString(BIO *bio, unsigned char **string);
 };
 

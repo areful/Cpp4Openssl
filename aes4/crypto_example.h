@@ -11,9 +11,13 @@
 // #define PRINT_KEYS
 
 void encryptRsa(Crypto *crypto);
+
 void encryptAes(Crypto *crypto);
+
 void printKeys(Crypto *crypto);
+
 void printBytesAsHex(unsigned char *bytes, size_t length, const char *message);
+
 std::string getMessage(const char *prompt);
 
 #endif

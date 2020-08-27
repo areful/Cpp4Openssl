@@ -11,12 +11,14 @@
 // Uncomment to write the encrypted file encoded in base 64
 // #define CONVERT_TO_BASE64
 
-char* encryptFile(Crypto *crypto, char *filename);
+char *encryptFile(Crypto *crypto, char *filename);
+
 void decryptFile(Crypto *crypto, char *filename, char *encryptedFilename);
 
 void writeFile(char *filename, unsigned char *file, size_t fileLength);
+
 int readFile(char *filename, unsigned char **file);
 
-char* appendToString(char *string, char *suffix);
+char *appendToString(char *string, char *suffix);
 
 #endif
